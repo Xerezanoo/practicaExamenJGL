@@ -1,0 +1,9 @@
+# version: "3.1"
+services:
+  fastapi:
+    container_name: fastAPI-JGL
+    # La imagen debe ser la que tenemos configurada en el Action de GitHub:
+    image: xerezano/fastapi:latest
+    ports:
+      - 80:8000
+    restart: always
