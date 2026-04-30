@@ -9,7 +9,7 @@ if __name__ == '__main__':
     db.Base.metadata.create_all(db.engine)
 
     lista = [
-        ("Ana", 44),
+        ("JGL", 20),
         ("Ricardo", 37),
         ("Marina", 32),
         ("Arturo", 34),
