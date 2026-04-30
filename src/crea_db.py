@@ -11,7 +11,7 @@ if __name__ == '__main__':
     lista = [
         ("JGL", 20),
         ("Prueba2", 40),
-        ("Marina", 32),
+        ("Prueba3", 30),
         ("Arturo", 34),
         ("Alfredo", 49)
     ]
