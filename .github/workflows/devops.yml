@@ -1,0 +1,58 @@
+name: Docker CI/CD
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - src/**
+
+jobs:
+  build:
+    name: Build and Push Docker image
+    runs-on: ubuntu-latest
+    steps: 
+      # 1 
+      - uses: actions/checkout@v4
+      # 2  
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3 
+        with:
+          username: ${{ secrets.DH_USUARIO }}
+          password: ${{ secrets.DH_TOKEN }}
+      # 3   
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true 
+          tags: ${{ secrets.DH_USUARIO }}/fastapi:latest
+
+  # Añadir despliegue en AWS
+  aws:
+    name: Deploy image to AWS
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    # 1
+    - name: Copy docker-compose.yml via SSH key  
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.AMZ_IP }}
+        username: ${{ secrets.AMZ_USUARIO }}
+        port: 22 # ${{ secrets.PORT }}
+        key: ${{ secrets.AMZ_CLAVE }}
+        source: "docker-compose.yml"
+        target: /home/admin
+    # 2
+    - name: Script deploy Docker services 
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.AMZ_IP }}
+        username: ${{ secrets.AMZ_USUARIO }}
+        key: ${{ secrets.AMZ_CLAVE }}
+        port: 22  # ${{ secrets.PORT }}
+        script: |
+            sleep 30
+            docker compose down --rmi all
+            docker compose up -d
